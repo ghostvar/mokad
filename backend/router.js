@@ -7,7 +7,6 @@ const { v4: uuidv4, validate: uuidValidate } = require('uuid');
 const knex = require('./knex');
 
 const api = express.Router();
-const avalfun = ['login', 'krs', 'transkip'];
 
 function unAuth(res) {
   res.status(403).json({
@@ -38,7 +37,7 @@ api.use(function timeLog (req, res, next) {
 
 api.get('/scrapper/:funame', function (req, res) {
   const { funame } = req.params;
-  if(avalfun.includes(funame)) {
+  if(['login', 'krs', 'transkip'].includes(funame)) {
     const child = spawn('phantomjs', [__dirname + "/scrapper/phantom.js", funame, req.auth.urlencoded]);
     child.stdout.on('data', async (out) => {
       const [status, html] = JSON.parse(out);
@@ -48,7 +47,7 @@ api.get('/scrapper/:funame', function (req, res) {
         userid: crypto.createHash('sha256').update(req.auth.urlencoded).digest('hex'),
         status, html, funame
       });
-      res.status(201).json({
+      res.status(status == 'success' ? 201 : 400).json({
         id, status, html,
         message: status == 'success' ? 'Metadata success downloaded!' : 'Failed to download metadata!',
       });
@@ -72,6 +71,13 @@ api.get('/scrapper', async function (req, res) {
 
 api.get('/renderer/:id?', async function (req, res) {
   const { id } = req.params;
+  const { funame } = req.query;
+  if(funame && !fs.existsSync(__dirname + "/renderer/" + funame + ".js")) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Jenis renderer tidak didukung'
+    });
+  }
   if(id && !uuidValidate(id)) {
     return res.status(400).json({
       status: 'error',
@@ -83,7 +89,7 @@ api.get('/renderer/:id?', async function (req, res) {
   });
 
   if(id) meta.where({ id });
-  else meta.where({ funame: 'transkip' });
+  else meta.where({ funame: funame ? funame: 'transkip' }).where('status', '<>', 'error');
 
   meta = await meta.orderBy('created_at', 'desc').first();
   if(meta) {
