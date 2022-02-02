@@ -1,3 +1,58 @@
+<script>
+import { inject, reactive, ref } from 'vue';
+export default {
+  setup() {
+    const show_setting = ref(false);
+    const result = reactive({
+      status: '',
+      message: '',
+      html: ''
+    });
+    const form = reactive({
+      username: '',
+      password: ''
+    });
+
+    return {
+      show_setting,
+      setAuth: inject('setAuth'),
+      clearAuth: inject('clearAuth'),
+      axios: inject('axios'),
+      form,
+      result
+    }
+  },
+  methods: {
+    test() {
+      const { username, password } = this.form;
+      this.axios.get('/scrapper/login', {
+        auth: { username, password },
+      })
+      .then(res => {
+        this.result.status = res.data.status;
+        this.result.message = res.data.message;
+        this.result.html = res.data.html;
+      }).catch(err => {
+        if(err.response && err.response.data) {
+          this.result.status = err.response.data.status;
+          this.result.message = err.response.data.message;
+        }
+      });
+    },
+    save(force = false) {
+      if(this.result.status == 'success' || force) {
+        this.setAuth(this.form, () => {
+          this.show_setting = false;
+        });
+      }
+    },
+    keluar() {
+      this.clearAuth();
+    }
+  }
+}
+</script>
+
 <template>
   <header id="page-topbar">
     <div class="navbar-header">
@@ -6,19 +61,29 @@
         <div class="navbar-brand-box text-center">
           <a href="index.html" class="logo logo-dark">
             <span class="logo-sm">
-              <img src="" alt="logo-sm-dark" height="22" />
+              <img
+                src="../assets/logo.png"
+                id="#logo"
+                alt="logo-sm-dark"
+                height="22"
+              />
             </span>
             <span class="logo-lg">
-              <img src="" alt="logo-dark" height="24" />
+              <img
+                src="../assets/logo.png"
+                id="#logo"
+                alt="logo-dark"
+                height="24"
+              />
             </span>
           </a>
 
           <a href="index.html" class="logo logo-light">
             <span class="logo-sm">
-              <img src="" alt="logo-sm-light" height="22" />
+              <img src="../assets/logo.png" alt="logo-sm-light" height="22" />
             </span>
             <span class="logo-lg">
-              <img src="" alt="logo-light" height="24" />
+              <img src="../assets/logo.png" alt="logo-light" height="24" />
             </span>
           </a>
         </div>
@@ -32,87 +97,12 @@
           <i class="ri-menu-2-line align-middle"></i>
         </button>
 
-        <!-- App Search-->
-        <form class="app-search d-none d-lg-block">
-          <div class="position-relative">
-            <input type="text" class="form-control" placeholder="Search..." />
-            <span class="ri-search-line"></span>
-          </div>
-        </form>
+        <div class="d-none d-lg-flex align-items-center">
+          <h4 class="m-0">Modernized Portal Akademik</h4>
+        </div>
       </div>
 
       <div class="d-flex">
-        <div class="dropdown d-inline-block d-lg-none ms-2">
-          <button
-            type="button"
-            class="btn header-item noti-icon waves-effect"
-            id="page-header-search-dropdown"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="ri-search-line"></i>
-          </button>
-          <div
-            class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
-            aria-labelledby="page-header-search-dropdown"
-          >
-            <form class="p-3">
-              <div class="mb-3 m-0">
-                <div class="input-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search ..."
-                  />
-                  <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">
-                      <i class="ri-search-line"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div class="dropdown d-inline-block">
-          <button
-            type="button"
-            class="btn header-item waves-effect"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <img class="" src="" alt="Header Language" height="16" />
-          </button>
-          <div class="dropdown-menu dropdown-menu-end">
-            <!-- item-->
-            <a href="javascript:void(0);" class="dropdown-item notify-item">
-              <img src="" alt="user-image" class="me-1" height="12" />
-              <span class="align-middle">Spanish</span>
-            </a>
-
-            <!-- item-->
-            <a href="javascript:void(0);" class="dropdown-item notify-item">
-              <img src="" alt="user-image" class="me-1" height="12" />
-              <span class="align-middle">German</span>
-            </a>
-
-            <!-- item-->
-            <a href="javascript:void(0);" class="dropdown-item notify-item">
-              <img src="" alt="user-image" class="me-1" height="12" />
-              <span class="align-middle">Italian</span>
-            </a>
-
-            <!-- item-->
-            <a href="javascript:void(0);" class="dropdown-item notify-item">
-              <img src="" alt="user-image" class="me-1" height="12" />
-              <span class="align-middle">Russian</span>
-            </a>
-          </div>
-        </div>
-
         <div class="dropdown d-none d-lg-inline-block ms-1">
           <button
             type="button"
@@ -321,54 +311,76 @@
           </div>
         </div>
 
-        <div class="dropdown d-inline-block user-dropdown">
-          <button
-            type="button"
-            class="btn header-item waves-effect"
-            id="page-header-user-dropdown"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <img
-              class="rounded-circle header-profile-user"
-              src=""
-              alt="Header Avatar"
-            />
-            <span class="d-none d-xl-inline-block ms-1">Kevin</span>
-            <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-end">
-            <!-- item-->
-            <a class="dropdown-item" href="#"
-              ><i class="ri-user-line align-middle me-1"></i> Profile</a
-            >
-            <a class="dropdown-item" href="#"
-              ><i class="ri-wallet-2-line align-middle me-1"></i> My Wallet</a
-            >
-            <a class="dropdown-item d-block" href="#"
-              ><span class="badge bg-success float-end mt-1">11</span
-              ><i class="ri-settings-2-line align-middle me-1"></i> Settings</a
-            >
-            <a class="dropdown-item" href="#"
-              ><i class="ri-lock-unlock-line align-middle me-1"></i> Lock
-              screen</a
-            >
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item text-danger" href="#"
-              ><i class="ri-shut-down-line align-middle me-1 text-danger"></i>
-              Logout</a
-            >
-          </div>
-        </div>
-
         <div class="dropdown d-inline-block">
           <button
+            @click="show_setting = !show_setting"
             type="button"
             class="btn header-item noti-icon right-bar-toggle waves-effect"
           >
             <i class="mdi mdi-cog"></i>
           </button>
+          <div
+            class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 fade" :class="{ 'show': show_setting }"
+            aria-labelledby="page-header-notifications-dropdown"
+            style="
+              position: absolute;
+              inset: 0px 0px auto auto;
+              margin: 0px;
+              transform: translate(0px, 72px);
+            "
+            data-popper-placement="bottom-end"
+          >
+            <div class="p-3">
+              <div class="row align-items-center">
+                <h6 class="m-0">Pengaturan</h6>
+              </div>
+            </div>
+            <div class="px-3">
+              <form @submit.prevent="save">
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Endpoint</label
+                  >
+                  <input
+                    class="form-control"
+                    type="text"
+                    value="https://siakad.utdi.ac.id/"
+                    disabled
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Username</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    v-model="form.username"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Password</label
+                  >
+                  <input
+                    type="password"
+                    class="form-control"
+                    v-model="form.password"
+                  />
+                </div>
+              </form>
+              <p :class="{ 'text-success': result.status == 'success', 'text-danger': result.status == 'error' }" v-text="result.message"></p>
+            </div>
+            <div class="p-2 border-top">
+              <div class="d-flex justify-content-between">
+                <button class="btn btn-soft-default" @click="test()" type="button">Test</button>
+                <div>
+                  <button class="btn btn-soft-secondary me-2" @click="keluar()" type="button">Keluar</button>
+                  <button class="btn btn-soft-success" @click="save()" @dblclick="save(true)" type="submit">Simpan</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

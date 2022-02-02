@@ -6,7 +6,7 @@
           <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link" href="index.html">
-                <i class="mdi mdi-home-variant-outline me-2"></i> Dashboard
+                <i class="mdi mdi-home-variant-outline me-2"></i> Statistik
               </a>
             </li>
 
