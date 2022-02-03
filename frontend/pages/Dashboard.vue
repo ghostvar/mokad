@@ -3,13 +3,253 @@ import { inject, onMounted, reactive } from '@vue/runtime-core'
 export default {
   setup() {
     const axios = inject('axios');
+    const seriesJumlah = reactive([0, 0, 0, 0, 0]);
+    const series_nilai = reactive([0, 0, 0, 0, 0]);
+    const series_ringkasan = reactive([{
+      name: 'Banyak Matkul',
+      type: 'column',
+      data: []
+    }, {
+      name: 'Jumlah SKS',
+      type: 'line',
+      data: []
+    }, {
+      name: 'IPK',
+      type: 'line',
+      data: []
+    }]);
     const metadata = reactive({
       prestasi_akademik: {},
       detail_informasi: {},
       transkip_nilai: []
     });
+    const chartNilaiOptions = reactive({
+        chart: {
+          height: 390,
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            offsetY: 0,
+            startAngle: 0,
+            endAngle: 270,
+            hollow: {
+              margin: 5,
+              size: '30%',
+              background: 'transparent',
+              image: undefined,
+            },
+            dataLabels: {
+              name: {
+                show: false,
+              },
+              value: {
+                show: false,
+              }
+            }
+          }
+        },
+        colors: ['#0ac074', '#0084ff', '#39539E', '#fcb92c', '#ff3d60'],
+        labels: ['A', 'B', 'C', 'D', 'E'],
+        legend: {
+          show: true,
+          floating: true,
+          fontSize: '16px',
+          position: 'right',
+          offsetX: 160,
+          offsetY: 15,
+          labels: {
+            useSeriesColors: true,
+          },
+          markers: {
+            size: 0
+          },
+          formatter: (seriesName, opts) => {
+            return seriesJumlah[opts.seriesIndex] + " Nilai " + seriesName;
+          },
+          itemMargin: {
+            vertical: 3
+          }
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            legend: {
+                show: false
+            }
+          }
+        }]
+      });
+    const chartRingkasanOptions = reactive({
+        chart: {
+          height: 350,
+          type: 'line',
+          stacked: false
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          width: [1, 1, 4]
+        },
+        title: {
+          text: 'Analisis Nilai',
+          align: 'left',
+          offsetX: 110
+        },
+        xaxis: {
+          categories: [],
+        },
+        yaxis: [
+          {
+            axisTicks: {
+              show: true,
+            },
+            axisBorder: {
+              show: true,
+              color: '#008FFB'
+            },
+            labels: {
+              style: {
+                colors: '#008FFB',
+              }
+            },
+            title: {
+              text: "Jumlah Matkul (tiap semester)",
+              style: {
+                color: '#008FFB',
+              }
+            },
+            tooltip: {
+              enabled: true
+            }
+          },
+          {
+            seriesName: 'SKS',
+            opposite: true,
+            axisTicks: {
+              show: true,
+            },
+            axisBorder: {
+              show: true,
+              color: '#00E396'
+            },
+            labels: {
+              style: {
+                colors: '#00E396',
+              }
+            },
+            title: {
+              text: "SKS (tiap semester)",
+              style: {
+                color: '#00E396',
+              }
+            },
+          },
+          {
+            seriesName: 'IPK',
+            opposite: true,
+            axisTicks: {
+              show: true,
+            },
+            axisBorder: {
+              show: true,
+              color: '#FEB019'
+            },
+            labels: {
+              style: {
+                colors: '#FEB019',
+              },
+            },
+            title: {
+              text: "IPK (tiap semester)",
+              style: {
+                color: '#FEB019',
+              }
+            }
+          },
+        ],
+        tooltip: {
+          fixed: {
+            enabled: true,
+            position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+            offsetY: 30,
+            offsetX: 60
+          },
+        },
+        legend: {
+          horizontalAlign: 'left',
+          offsetX: 40
+        }
+      });
+
+    const loading = reactive({
+      status: true
+    });
+    const indexing = [];
+    const categories = [];
+    const renderSeries = (transkip) => {
+      const semester = {};
+      transkip.map(r => {
+        switch(r.Nilai) {
+          case 'A': seriesJumlah[0]++; break;
+          case 'B': seriesJumlah[1]++; break;
+          case 'C': seriesJumlah[2]++; break;
+          case 'D': seriesJumlah[3]++; break;
+          case 'E': seriesJumlah[4]++; break;
+        }
+
+        if(!semester[r.Semester]) {
+          indexing.push(r.Semester);
+          semester[r.Semester] = {
+            jumlah_matkul: 1,
+            jumlah_sks: parseInt(r.Sks),
+            satuan_t: [{
+              sks: parseInt(r.Sks),
+              nilai: r.Nilai
+            }]
+          };
+        } else {
+          semester[r.Semester].jumlah_matkul++;
+          semester[r.Semester].jumlah_sks = semester[r.Semester].jumlah_sks + parseInt(r.Sks);
+          semester[r.Semester].satuan_t.push({
+            sks: parseInt(r.Sks),
+            nilai: r.Nilai
+          });
+        }
+      });
+
+      indexing.map(s => {
+        categories.push((s || ' ').replace('Semester ', ''));
+        let ipk = 0;
+        const smt = semester[s];
+        series_ringkasan[0].data.push(smt.jumlah_matkul);
+        series_ringkasan[1].data.push(smt.jumlah_sks);
+        smt.satuan_t.map(r => {
+          switch(r.nilai) {
+            case 'A': ipk += (r.sks * 4) / smt.jumlah_sks; break;
+            case 'B': ipk += (r.sks * 3) / smt.jumlah_sks; break;
+            case 'C': ipk += (r.sks * 2) / smt.jumlah_sks; break;
+            case 'D': ipk += (r.sks * 1) / smt.jumlah_sks; break;
+            case 'E': ipk += (r.sks * 0) / smt.jumlah_sks; break;
+          }
+        });
+        series_ringkasan[2].data.push(parseFloat(ipk).toFixed(2));
+      });
+
+      chartRingkasanOptions.xaxis = {
+        categories
+      };
+
+      series_nilai[0] = seriesJumlah[0] == 0 ? 0 : 100 / transkip.length * seriesJumlah[0];
+      series_nilai[1] = seriesJumlah[1] == 0 ? 0 : 100 / transkip.length * seriesJumlah[1];
+      series_nilai[2] = seriesJumlah[2] == 0 ? 0 : 100 / transkip.length * seriesJumlah[2];
+      series_nilai[3] = seriesJumlah[3] == 0 ? 0 : 100 / transkip.length * seriesJumlah[3];
+      series_nilai[4] = seriesJumlah[4] == 0 ? 0 : 100 / transkip.length * seriesJumlah[4];
+    }
 
     const init = () => {
+      loading.status = true;
       axios.get('/renderer')
       .then(res => {
         const {
@@ -20,6 +260,8 @@ export default {
         metadata.prestasi_akademik = prestasi_akademik;
         metadata.detail_informasi = detail_informasi;
         metadata.transkip_nilai = transkip_nilai;
+        renderSeries(transkip_nilai);
+        loading.status = false;
       }).catch(() => {});
     }
 
@@ -28,7 +270,12 @@ export default {
     });
 
     return {
-      metadata
+      chartNilaiOptions,
+      chartRingkasanOptions,
+      metadata,
+      loading,
+      series_nilai,
+      series_ringkasan,
     }
   },
 }
@@ -106,9 +353,6 @@ export default {
           <div class="card">
             <div class="card-body">
               <div class="d-flex text-muted">
-                <div class="flex-shrink-0 me-3 align-self-center">
-                  <div id="radialchart-3" class="apex-charts" dir="ltr"></div>
-                </div>
                 <div class="flex-grow-1 overflow-hidden">
                   <p class="text-success mb-1">Jumlah Matakuliah</p>
                   <h5 class="mb-3" v-text="metadata.prestasi_akademik.Jumlah_mata_kuliah_diambil"></h5>
@@ -158,96 +402,18 @@ export default {
       </div>
       <!-- end row -->
 
-      <div class="row">
+      <div class="row" v-if="!loading.status">
         <div class="col-xl-8">
           <div class="card">
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h5 class="card-title">Overview</h5>
-                </div>
-                <div class="flex-shrink-0">
-                  <div>
-                    <button type="button" class="btn btn-soft-secondary btn-sm">
-                      ALL
-                    </button>
-                    <button type="button" class="btn btn-soft-primary btn-sm">
-                      1M
-                    </button>
-                    <button type="button" class="btn btn-soft-secondary btn-sm">
-                      6M
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-soft-secondary btn-sm active"
-                    >
-                      1Y
-                    </button>
-                  </div>
+                  <h5 class="card-title">Ringkasan</h5>
                 </div>
               </div>
 
               <div>
-                <div id="mixed-chart" class="apex-charts" dir="ltr"></div>
-              </div>
-            </div>
-            <!-- end card-body -->
-
-            <div class="card-body border-top">
-              <div class="text-muted text-center">
-                <div class="row">
-                  <div class="col-4 border-end">
-                    <div>
-                      <p class="mb-2">
-                        <i
-                          class="mdi mdi-circle font-size-12 text-primary me-1"
-                        ></i>
-                        Expenses
-                      </p>
-                      <h5 class="font-size-16 mb-0">
-                        $ 8,524
-                        <span class="text-success font-size-12"
-                          ><i class="mdi mdi-menu-up font-size-14 me-1"></i>1.2
-                          %</span
-                        >
-                      </h5>
-                    </div>
-                  </div>
-                  <div class="col-4 border-end">
-                    <div>
-                      <p class="mb-2">
-                        <i
-                          class="mdi mdi-circle font-size-12 text-light me-1"
-                        ></i>
-                        Maintenance
-                      </p>
-                      <h5 class="font-size-16 mb-0">
-                        $ 8,524
-                        <span class="text-success font-size-12"
-                          ><i class="mdi mdi-menu-up font-size-14 me-1"></i>2.0
-                          %</span
-                        >
-                      </h5>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div>
-                      <p class="mb-2">
-                        <i
-                          class="mdi mdi-circle font-size-12 text-danger me-1"
-                        ></i>
-                        Profit
-                      </p>
-                      <h5 class="font-size-16 mb-0">
-                        $ 8,524
-                        <span class="text-success font-size-12"
-                          ><i class="mdi mdi-menu-up font-size-14 me-1"></i>0.4
-                          %</span
-                        >
-                      </h5>
-                    </div>
-                  </div>
-                </div>
+                <apexchart type="line" height="350" :options="chartRingkasanOptions" :series="series_ringkasan" />
               </div>
             </div>
             <!-- end card-body -->
@@ -261,74 +427,17 @@ export default {
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h5 class="card-title">Social Source</h5>
+                  <h5 class="card-title">Perbandingan Nilai</h5>
                 </div>
                 <div class="flex-shrink-0">
                   <select class="form-select form-select-sm mb-0 my-n1">
-                    <option value="MAY" selected="">May</option>
-                    <option value="AP">April</option>
-                    <option value="MA">March</option>
-                    <option value="FE">February</option>
-                    <option value="JA">January</option>
-                    <option value="DE">December</option>
+                    <option value="" selected="">Semua Semester</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <div id="radialBar-chart" class="apex-charts" dir="ltr"></div>
-              </div>
-
-              <div class="row">
-                <div class="col-4">
-                  <div class="social-source text-center mt-3">
-                    <div class="avatar-xs mx-auto mb-3">
-                      <span
-                        class="
-                          avatar-title
-                          rounded-circle
-                          bg-primary
-                          font-size-18
-                        "
-                      >
-                        <i class="ri ri-facebook-circle-fill text-white"></i>
-                      </span>
-                    </div>
-                    <h5 class="font-size-15">Facebook</h5>
-                    <p class="text-muted mb-0">125 sales</p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="social-source text-center mt-3">
-                    <div class="avatar-xs mx-auto mb-3">
-                      <span
-                        class="avatar-title rounded-circle bg-info font-size-18"
-                      >
-                        <i class="ri ri-twitter-fill text-white"></i>
-                      </span>
-                    </div>
-                    <h5 class="font-size-15">Twitter</h5>
-                    <p class="text-muted mb-0">112 sales</p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="social-source text-center mt-3">
-                    <div class="avatar-xs mx-auto mb-3">
-                      <span
-                        class="
-                          avatar-title
-                          rounded-circle
-                          bg-danger
-                          font-size-18
-                        "
-                      >
-                        <i class="ri ri-instagram-line text-white"></i>
-                      </span>
-                    </div>
-                    <h5 class="font-size-15">Instagram</h5>
-                    <p class="text-muted mb-0">104 sales</p>
-                  </div>
-                </div>
+                <apexchart type="radialBar" height="390" :options="chartNilaiOptions" :series="series_nilai" />
               </div>
             </div>
             <!-- end card-body -->

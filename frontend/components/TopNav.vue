@@ -5,15 +5,20 @@
         <div class="collapse navbar-collapse" id="topnav-menu-content">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="index.html">
-                <i class="mdi mdi-home-variant-outline me-2"></i> Statistik
+              <a class="nav-link cp">
+                <i class="mdi mdi-chart-box-outline me-2"></i> Statistik
               </a>
             </li>
 
-            <li class="nav-item dropdown">
+            <li class="nav-item">
+              <a class="nav-link cp">
+                <i class="mdi mdi-book-open-page-variant-outline me-2"></i> Matakuliah
+              </a>
+            </li>
+
+            <!-- <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle arrow-none"
-                href="#"
                 id="topnav-uielement"
                 role="button"
               >
@@ -97,41 +102,6 @@
                       >
                       <a href="ui-rating.html" class="dropdown-item">Rating</a>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle arrow-none"
-                href="#"
-                id="topnav-apps"
-                role="button"
-              >
-                <i class="ri-apps-2-line me-2"></i>Apps
-                <div class="arrow-down"></div>
-              </a>
-              <div class="dropdown-menu" aria-labelledby="topnav-apps">
-                <a href="calendar.html" class="dropdown-item">Calendar</a>
-                <div class="dropdown">
-                  <a
-                    class="dropdown-item dropdown-toggle arrow-none"
-                    href="#"
-                    id="topnav-email"
-                    role="button"
-                  >
-                    Email
-                    <div class="arrow-down"></div>
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="topnav-email">
-                    <a href="email-inbox.html" class="dropdown-item">Inbox</a>
-                    <a href="email-read.html" class="dropdown-item"
-                      >Read Email</a
-                    >
-                    <a href="email-compose.html" class="dropdown-item"
-                      >Email Compose</a
-                    >
                   </div>
                 </div>
               </div>
@@ -279,148 +249,7 @@
                   </div>
                 </div>
               </div>
-            </li>
-
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle arrow-none"
-                href="#"
-                id="topnav-more"
-                role="button"
-              >
-                <i class="ri-file-copy-2-line me-2"></i>Pages
-                <div class="arrow-down"></div>
-              </a>
-              <div class="dropdown-menu" aria-labelledby="topnav-more">
-                <div class="dropdown">
-                  <a
-                    class="dropdown-item dropdown-toggle arrow-none"
-                    href="#"
-                    id="topnav-auth"
-                    role="button"
-                  >
-                    Authentication
-                    <div class="arrow-down"></div>
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="topnav-auth">
-                    <a href="auth-login.html" class="dropdown-item">Login</a>
-                    <a href="auth-register.html" class="dropdown-item"
-                      >Register</a
-                    >
-                    <a href="auth-recoverpw.html" class="dropdown-item"
-                      >Recover Password</a
-                    >
-                    <a href="auth-lock-screen.html" class="dropdown-item"
-                      >Lock Screen</a
-                    >
-                  </div>
-                </div>
-
-                <div class="dropdown">
-                  <a
-                    class="dropdown-item dropdown-toggle arrow-none"
-                    href="#"
-                    id="topnav-utility"
-                    role="button"
-                  >
-                    Utility
-                    <div class="arrow-down"></div>
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="topnav-utility">
-                    <a href="pages-starter.html" class="dropdown-item"
-                      >Starter Page</a
-                    >
-                    <a href="pages-maintenance.html" class="dropdown-item"
-                      >Maintenance</a
-                    >
-                    <a href="pages-comingsoon.html" class="dropdown-item"
-                      >Coming Soon</a
-                    >
-                    <a href="pages-timeline.html" class="dropdown-item"
-                      >Timeline</a
-                    >
-                    <a href="pages-faqs.html" class="dropdown-item">FAQs</a>
-                    <a href="pages-pricing.html" class="dropdown-item"
-                      >Pricing</a
-                    >
-                    <a href="pages-404.html" class="dropdown-item">Error 404</a>
-                    <a href="pages-500.html" class="dropdown-item">Error 500</a>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle arrow-none"
-                href="#"
-                id="topnav-layout"
-                role="button"
-              >
-                <i class="ri-layout-3-line me-2"></i><span>Layouts</span>
-                <div class="arrow-down"></div>
-              </a>
-              <div class="dropdown-menu" aria-labelledby="topnav-layout">
-                <div class="dropdown">
-                  <a
-                    class="dropdown-item dropdown-toggle arrow-none"
-                    href="#"
-                    id="topnav-layout-verti"
-                    role="button"
-                  >
-                    <span>Vertical</span>
-                    <div class="arrow-down"></div>
-                  </a>
-                  <div
-                    class="dropdown-menu"
-                    aria-labelledby="topnav-layout-verti"
-                  >
-                    <a href="layouts-light-sidebar.html" class="dropdown-item"
-                      >Light Sidebar</a
-                    >
-                    <a href="layouts-compact-sidebar.html" class="dropdown-item"
-                      >Compact Sidebar</a
-                    >
-                    <a href="layouts-icon-sidebar.html" class="dropdown-item"
-                      >Icon Sidebar</a
-                    >
-                    <a href="layouts-boxed.html" class="dropdown-item"
-                      >Boxed Width</a
-                    >
-                  </div>
-                </div>
-
-                <div class="dropdown">
-                  <a
-                    class="dropdown-item dropdown-toggle arrow-none"
-                    href="#"
-                    id="topnav-layout-hori"
-                    role="button"
-                  >
-                    <span>Horizontal</span>
-                    <div class="arrow-down"></div>
-                  </a>
-                  <div
-                    class="dropdown-menu"
-                    aria-labelledby="topnav-layout-hori"
-                  >
-                    <a href="layouts-horizontal.html" class="dropdown-item"
-                      >Default</a
-                    >
-                    <a
-                      href="layouts-hori-topbar-dark.html"
-                      class="dropdown-item"
-                      >Topbar Dark</a
-                    >
-                    <a
-                      href="layouts-hori-boxed-width.html"
-                      class="dropdown-item"
-                      >Boxed Width</a
-                    >
-                  </div>
-                </div>
-              </div>
-            </li>
+            </li> -->
           </ul>
         </div>
       </nav>

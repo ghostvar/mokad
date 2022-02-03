@@ -89,7 +89,7 @@ api.get('/renderer/:id?', async function (req, res) {
   });
 
   if(id) meta.where({ id });
-  else meta.where({ funame: funame ? funame: 'transkip' }).where('status', '<>', 'error');
+  else meta.where({ funame: funame ? funame: 'transkip' }).where('status', '=', 'success');
 
   meta = await meta.orderBy('created_at', 'desc').first();
   if(meta) {
