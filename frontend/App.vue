@@ -16,7 +16,7 @@ export default {
 
     const instance = axios.create({
       baseURL: '/api',
-      timeout: 60000
+      // timeout: 60000
     });
 
     instance.interceptors.request.use(function (config) {
