@@ -3,9 +3,10 @@ import { inject, reactive, ref } from 'vue';
 export default {
   setup() {
     const show_setting = ref(false);
+    const loading = ref(false);
     const result = reactive({
       status: '',
-      message: '',
+      message: 'Login dengan akun siakad',
       html: ''
     });
     const form = reactive({
@@ -19,20 +20,24 @@ export default {
       clearAuth: inject('clearAuth'),
       axios: inject('axios'),
       form,
+      loading,
       result
     }
   },
   methods: {
     test() {
+      this.loading = true;
       const { username, password } = this.form;
       this.axios.get('/scrapper/transkip', {
         auth: { username, password },
       })
       .then(res => {
+        this.loading = false;
         this.result.status = res.data.status;
         this.result.message = res.data.message;
         this.result.html = res.data.html;
       }).catch(err => {
+        this.loading = false;
         if(err.response && err.response.data) {
           this.result.status = err.response.data.status;
           this.result.message = err.response.data.message;
@@ -180,10 +185,10 @@ export default {
             </div>
             <div class="p-2 border-top">
               <div class="d-flex justify-content-between">
-                <button class="btn btn-soft-default" @click="test()" type="button">Test</button>
+                <button class="btn btn-soft-default" @click="test()" type="button" v-text="loading ? '...':'Test'"></button>
                 <div>
                   <button class="btn btn-soft-secondary me-2" @click="keluar()" type="button">Keluar</button>
-                  <button class="btn btn-soft-success" @click="save()" @dblclick="save(true)" type="submit">Simpan</button>
+                  <button class="btn" :class="{ 'btn-soft-success': result.status != 'success', 'btn-success': result.status == 'success' }" @click="save()" @dblclick="save(true)" type="submit">Simpan</button>
                 </div>
               </div>
             </div>

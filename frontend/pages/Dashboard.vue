@@ -219,8 +219,10 @@ export default {
         }
       });
 
+      let semn = 0;
       indexing.map(s => {
-        categories.push((s || ' ').replace('Semester ', ''));
+        if(s.includes('Semester')) semn++;
+        categories.push(semn + ") " + (s || ' ').replace('Semester ', ''));
         let ipk = 0;
         const smt = semester[s];
         series_ringkasan[0].data.push(smt.jumlah_matkul);
