@@ -4,5 +4,6 @@ services:
   app:
     build: .
     restart: unless-stopped
+    network_mode: host
     ports:
       - 3030:3030
