@@ -39,7 +39,12 @@ api.get('/scrapper/:funame', function (req, res) {
   const { funame } = req.params;
   if(['login', 'krs', 'transkip'].includes(funame)) {
     const child = spawn('phantomjs', [__dirname + "/scrapper/phantom.js", funame, req.auth.urlencoded]);
-    child.stdout.on('data', async (out) => {
+    let stdoutChunks = [];
+    child.stdout.on('data', (out) => {
+        stdoutChunks = stdoutChunks.concat(out);
+    });
+    child.stdout.on('end', async () => {
+      const out = Buffer.concat(stdoutChunks).toString();
       const [status, html] = JSON.parse(out);
       const id = uuidv4();
       await knex('metadata').insert({
