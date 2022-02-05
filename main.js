@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.APP_PORT || 3030;
 
 app.use(helmet());
-app.use('/api', require('./backend/router'));
+app.use('/api', require('./backend/app'));
 
 app.use(express.static('dist'));
 
