@@ -1,3 +1,9 @@
+<style>
+.apexcharts-legend.apexcharts-align-center.apx-legend-position-right {
+  right: 60% !important;
+}
+</style>
+
 <script>
 import { inject, onMounted, reactive } from '@vue/runtime-core'
 export default {
@@ -221,7 +227,7 @@ export default {
 
       let semn = 0;
       indexing.map(s => {
-        if(s.includes('Semester')) semn++;
+        if(!s.includes('Pendek')) semn++;
         categories.push(semn + ") " + (s || ' ').replace('Semester ', ''));
         let ipk = 0;
         const smt = semester[s];
