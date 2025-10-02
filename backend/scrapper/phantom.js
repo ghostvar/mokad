@@ -3,11 +3,20 @@ var system = require('system');
 var args = system.args;
 var page = require('webpage').create();
 var data = args[2];
+var endpoint = "https://siakad.utdi.ac.id";
 
 var app = {
   authenticated: false,
+  check: function(fun, callback) {
+    if(this.authenticated) fun(callback);
+    else this.login(function (obj) {
+      JSON.parse(obj)[0] == 'success'
+      ? fun(callback) : callback(obj);
+    });
+  },
+
   login: function(callback) {
-    page.open('https://siakad.utdi.ac.id/index.php?pModule=zdKbnKU=&pSub=zdKbnKU=&pAct=0dWjppyl', 'post', data, function (status) {
+    page.open(endpoint+'/index.php?pModule=zdKbnKU=&pSub=zdKbnKU=&pAct=0dWjppyl', 'post', data, function (status) {
       if (status !== 'success') {
         callback('['+JSON.stringify(status)+','+JSON.stringify(page.content)+']');
       } else {
@@ -25,8 +34,8 @@ var app = {
   },
   
   krs: function(callback) {
-    var ex = function() {
-      page.open('https://siakad.utdi.ac.id/index.php?pModule=wsaVl5yfncmQptGaoA==&pSub=wsaVl5yfncmQptGaoA==&pAct=18yZqg==', 'get', '', function (status) {
+    this.check(function() {
+      page.open(endpoint+'/index.php?pModule=wsaVl5yfncmQptGaoA==&pSub=wsaVl5yfncmQptGaoA==&pAct=18yZqg==', 'get', '', function (status) {
         if (status !== 'success') {
           callback('['+JSON.stringify(status)+','+JSON.stringify(page.content)+']');
         } else {
@@ -40,24 +49,12 @@ var app = {
           callback(JSON.stringify(res));
         }
       });
-    }
-
-    if(this.authenticated) {
-      ex();
-    } else {
-      this.login(function (obj) {
-        if(JSON.parse(obj)[0] == 'success') {
-          ex();
-        } else {
-          callback(obj);
-        }
-      });
-    }
+    }, callback);
   },
 
   transkip: function(callback) {
-    var ex = function () {
-      page.open('https://siakad.utdi.ac.id/index.php?pModule=wsaVl5yfncmQqMqpoaal&pSub=wsaVl5yfncmQqteaoKeU1qKppA==&pAct=18yZqg==', 'get', '', function (status) {
+    this.check(function () {
+      page.open(endpoint+'/index.php?pModule=wsaVl5yfncmQqMqpoaal&pSub=wsaVl5yfncmQqteaoKeU1qKppA==&pAct=18yZqg==', 'get', '', function (status) {
         if(status !== 'success') {
           callback('['+JSON.stringify(status)+','+JSON.stringify(page.content)+']');
         } else {
@@ -71,19 +68,7 @@ var app = {
           callback(JSON.stringify(res));
         }
       });
-    }
-
-    if(this.authenticated) {
-      ex();
-    } else {
-      this.login(function (obj) {
-        if(JSON.parse(obj)[0] == 'success') {
-          ex();
-        } else {
-          callback(obj);
-        }
-      });
-    }
+    }, callback)
   }
 }
 
