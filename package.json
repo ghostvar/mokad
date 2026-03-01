@@ -28,7 +28,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.0.0",
     "nodemon": "2.0.15",
-    "vite": "^2.7.2"
+    "vite": "^5.4.21"
   },
   "nodemonConfig": {
     "ignore": [
